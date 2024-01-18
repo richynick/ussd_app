@@ -2,16 +2,19 @@ package com.richard.ussd_app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name="user")
 public class User {
 
@@ -38,8 +41,19 @@ public class User {
     @Column(name = "bvn")
     private String bvn;
 
-    @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_id")
-    @JsonIgnore
-    private Account account;
+    @Column(name = "account_number")
+    private String accountNumber;
+
+    @Column(name = "account_balance")
+    private BigDecimal accountBalance;
+
+    @Column(name = "status")
+    private String status;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime modifiedAt;
+
 }

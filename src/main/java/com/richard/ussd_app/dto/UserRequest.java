@@ -1,17 +1,19 @@
 package com.richard.ussd_app.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
-    private String firstname;
-    private String lastname;
+@Builder
+@NoArgsConstructor
+public class UserRequest {
+    private String firstName;
+    private String lastName;
     private String email;
-    private String phone_number;
+    private String phoneNumber;
     private String address;
     private String bvn;
 }
