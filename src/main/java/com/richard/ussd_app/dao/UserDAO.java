@@ -5,4 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserDAO extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
+    boolean existsByAccountNumber(String accountNumber);
+
+    User findByAccountNumber(String accountNumber);
 }

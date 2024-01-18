@@ -9,6 +9,8 @@ public class AccountUtils {
     public static final String ERROR_CODE = "01";
 
     public static final String ACCOUNT_EXISTS_CODE ="002";
+    public static final String ACCOUNT_FOUND_CODE ="009";
+    public static final String ACCOUNT_FOUND_MESSAGE ="Account has been found";
     public static final String ACCOUNT_EXISTS_MESSAGE ="A user with this email already exists";
     public static final String REQUEST_FAILED = "99";
     public static final String ERROR = "ERROR";

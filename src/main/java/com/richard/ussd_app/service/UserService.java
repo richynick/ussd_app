@@ -1,9 +1,7 @@
 package com.richard.ussd_app.service;
 
 import com.richard.ussd_app.dao.UserDAO;
-import com.richard.ussd_app.dto.AccountInfo;
-import com.richard.ussd_app.dto.Response;
-import com.richard.ussd_app.dto.UserRequest;
+import com.richard.ussd_app.dto.*;
 import com.richard.ussd_app.model.User;
 import com.richard.ussd_app.utils.AccountUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,9 @@ public class UserService implements IUser{
 
     @Autowired
     UserDAO userDAO;
+
+    @Autowired 
+    EmailService emailService;
     @Override
     public Response createAccount(UserRequest userRequest) {
 
@@ -44,6 +45,17 @@ public class UserService implements IUser{
                 .build();
 
         User savedUser = userDAO.save(newUser);
+        
+//        Send email to created user
+
+//        EmailDetails emailDetails = EmailDetails.builder()
+//                .recipient(savedUser.getEmail())
+//                .subject("Account Creation")
+//                .messageBody("Congratulation!  Your account has been created successully. \n Your account details:" +
+//                        " \n Account Name:  " + savedUser.getFirstName() + " " + savedUser.getLastName() + " " +
+//                        "\nAccount Number : " + savedUser.getAccountNumber() )
+//                .build();
+//        emailService.sendEmail(emailDetails);
         return Response.builder()
                 .responseCode(AccountUtils.REQUEST_SUCCESSFUL)
                 .responseMessage(AccountUtils.REQUEST_SUCCESSFUL_MESSAGE)
@@ -54,5 +66,27 @@ public class UserService implements IUser{
                          .build())
                 .build();
 
+    }
+
+    @Override
+    public Response balanceEnquiry(EnquiryRequest enquiryRequest) {
+//        check if provided account exists
+        boolean isAccountExit = userDAO.existsByAccountNumber(enquiryRequest.getAccountNumber());
+        if(!isAccountExit){
+             return Response.builder()
+                     .responseCode(AccountUtils.ERROR_CODE)
+                     .responseMessage(AccountUtils.RESOURCE_NOT_FOUND_MESSAGE )
+                     .accountInfo(null )
+                     .build();
+        }
+        User foundUser = userDAO.findByAccountNumber(enquiryRequest.getAccountNumber());
+        return Response.builder()
+                .responseCode(AccountUtils.ACCOUNT_FOUND_CODE)
+                .responseMessage(AccountUtils.ACCOUNT_FOUND_MESSAGE)
+                .accountInfo(AccountInfo.builder()
+                        .accountBalance(foundUser.getAccountBalance())
+                        .accountName(foundUser.getFirstName() + " " +  foundUser.getLastName())
+                        .build())
+                .build();
     }
 }
