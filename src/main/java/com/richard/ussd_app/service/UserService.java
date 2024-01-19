@@ -80,13 +80,42 @@ public class UserService implements IUser{
                      .build();
         }
         User foundUser = userDAO.findByAccountNumber(enquiryRequest.getAccountNumber());
+//        System.out.println("checking the content" + userD);
         return Response.builder()
                 .responseCode(AccountUtils.ACCOUNT_FOUND_CODE)
                 .responseMessage(AccountUtils.ACCOUNT_FOUND_MESSAGE)
                 .accountInfo(AccountInfo.builder()
                         .accountBalance(foundUser.getAccountBalance())
-                        .accountName(foundUser.getFirstName() + " " +  foundUser.getLastName())
+                        .accountName(foundUser.getFirstName() + " " + foundUser.getLastName())
                         .build())
                 .build();
     }
+
+    @Override
+    public Response creditAccount(CreditDebitRequest request) {
+        //check if account exists
+        boolean isAccountExit = userDAO.existsByAccountNumber(request.getAccountNumber());
+        System.out.println("Chekcking content" + isAccountExit);
+        if(!isAccountExit){
+            return Response.builder()
+                    .responseCode(AccountUtils.ERROR_CODE)
+                    .responseMessage(AccountUtils.RESOURCE_NOT_FOUND_MESSAGE )
+                    .accountInfo(null )
+                    .build();
+        }
+        User userToCredit = userDAO.findByAccountNumber(request.getAccountNumber());
+        System.out.println("checking if usertocredit has content" + userToCredit);
+        userToCredit.setAccountBalance(userToCredit.getAccountBalance().add(request.getAmount()));
+
+        return Response.builder()
+                .responseCode(AccountUtils.ACCOUNT_CREDITED_SUCCESS)
+                .responseMessage(AccountUtils.ACCOUNT_CREDITED_SUCCESS_MESSAGE)
+                .accountInfo(AccountInfo.builder()
+                        .accountName(userToCredit.getFirstName() +" " + userToCredit.getLastName())
+                        .accountBalance(userToCredit.getAccountBalance())
+                        .accountNumber(request.getAccountNumber())
+                        .build())
+                .build();
+    }
+
 }

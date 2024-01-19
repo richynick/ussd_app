@@ -24,6 +24,9 @@ public class AccountUtils {
     public static final String REQUEST_PENDING_MESSAGE = "Operation pending.";
     public static final String RESOURCE_NOT_FOUND_MESSAGE = "Resource Not Found";
 
+    public static final String ACCOUNT_CREDITED_SUCCESS ="006";
+    public static final String ACCOUNT_CREDITED_SUCCESS_MESSAGE ="your account has been credited successfully";
+
 
     public static String generateAccountNumber(){
         Year currentYear = Year.now();
