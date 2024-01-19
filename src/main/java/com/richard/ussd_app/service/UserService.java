@@ -88,6 +88,7 @@ public class UserService implements IUser{
                 .accountInfo(AccountInfo.builder()
                         .accountBalance(foundUser.getAccountBalance())
                         .accountName(foundUser.getFirstName() + " " + foundUser.getLastName())
+                        .accountNumber(foundUser.getAccountNumber())
                         .build())
                 .build();
     }
@@ -162,7 +163,6 @@ public class UserService implements IUser{
                             .accountNumber(request.getAccountNumber())
                             .accountName(userToDebited.getFirstName() + " " + userToDebited.getLastName())
                             .accountBalance(userToDebited.getAccountBalance())
-
                             .build())
                     .build();
         }
