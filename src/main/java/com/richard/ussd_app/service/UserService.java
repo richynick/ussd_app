@@ -95,7 +95,9 @@ public class UserService implements IUser{
     public Response creditAccount(CreditDebitRequest request) {
         //check if account exists
         boolean isAccountExit = userDAO.existsByAccountNumber(request.getAccountNumber());
+
         System.out.println("Chekcking content" + isAccountExit);
+
         if(!isAccountExit){
             return Response.builder()
                     .responseCode(AccountUtils.ERROR_CODE)
@@ -104,8 +106,11 @@ public class UserService implements IUser{
                     .build();
         }
         User userToCredit = userDAO.findByAccountNumber(request.getAccountNumber());
+
         System.out.println("checking if usertocredit has content" + userToCredit);
+
         userToCredit.setAccountBalance(userToCredit.getAccountBalance().add(request.getAmount()));
+        userDAO.save(userToCredit);
 
         return Response.builder()
                 .responseCode(AccountUtils.ACCOUNT_CREDITED_SUCCESS)
