@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 @Service
 public class UserService implements IUser{
@@ -121,6 +122,50 @@ public class UserService implements IUser{
                         .accountNumber(request.getAccountNumber())
                         .build())
                 .build();
+    }
+
+    @Override
+    public Response debitAccount(CreditDebitRequest request) {
+
+//        check of account exists
+
+        boolean isAccountExit = userDAO.existsByAccountNumber(request.getAccountNumber());
+
+        System.out.println("Chekcking content" + isAccountExit);
+
+        if(!isAccountExit){
+            return Response.builder()
+                    .responseCode(AccountUtils.ERROR_CODE)
+                    .responseMessage(AccountUtils.RESOURCE_NOT_FOUND_MESSAGE )
+                    .accountInfo(null )
+                    .build();
+        }
+
+        //        check if the amount to be debited is not more than current account balance
+        User userToDebited = userDAO.findByAccountNumber(request.getAccountNumber());
+        BigInteger availableBalance = userToDebited.getAccountBalance().toBigInteger();
+        BigInteger debitAmount = request.getAmount().toBigInteger();
+        if (availableBalance.intValue() < debitAmount.intValue()) {
+            return Response.builder()
+                    .responseCode(AccountUtils.INSUFFICIENT_BALANCE_CODE)
+                    .responseMessage(AccountUtils.INSUFFICIENT_BALANCE_MESSAGE)
+                    .accountInfo(null)
+                    .build();
+        }
+        else {
+            userToDebited.setAccountBalance(userToDebited.getAccountBalance().subtract(request.getAmount()));
+            userDAO.save(userToDebited);
+            return Response.builder()
+                    .responseCode(AccountUtils.REQUEST_SUCCESSFUL)
+                    .responseMessage(AccountUtils.REQUEST_SUCCESSFUL_MESSAGE)
+                    .accountInfo(AccountInfo.builder()
+                            .accountNumber(request.getAccountNumber())
+                            .accountName(userToDebited.getFirstName() + " " + userToDebited.getLastName())
+                            .accountBalance(userToDebited.getAccountBalance())
+
+                            .build())
+                    .build();
+        }
     }
 
 }

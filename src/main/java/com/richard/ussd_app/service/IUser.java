@@ -14,4 +14,5 @@ public interface IUser {
     Response createAccount(UserRequest userRequest);
     Response balanceEnquiry(EnquiryRequest enquiryRequest);
     Response creditAccount(CreditDebitRequest request);
+    Response debitAccount(CreditDebitRequest request);
 }

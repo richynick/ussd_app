@@ -27,6 +27,8 @@ public class AccountUtils {
     public static final String ACCOUNT_CREDITED_SUCCESS ="006";
     public static final String ACCOUNT_CREDITED_SUCCESS_MESSAGE ="your account has been credited successfully";
 
+    public static final String INSUFFICIENT_BALANCE_CODE ="007";
+    public static final String INSUFFICIENT_BALANCE_MESSAGE ="Insufficient balance";
 
     public static String generateAccountNumber(){
         Year currentYear = Year.now();
