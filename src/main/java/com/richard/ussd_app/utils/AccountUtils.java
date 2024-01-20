@@ -1,9 +1,25 @@
 package com.richard.ussd_app.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.richard.ussd_app.dto.SmsRequest;
+import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.io.IOException;
 import java.time.Year;
+
+import static org.hibernate.dialect.OracleTypes.JSON;
 
 public class AccountUtils {
 
+    @Value("${smslive.apiKey}")
+    private static String smsLiveApiKey;
+
+    @Value("${smslive.url}")
+    private static String smsLiveUrl;
+
+    @Value("${smslive.sendId}")
+    private static String sendId;
 
     public static final String REQUEST_SUCCESSFUL = "00";
     public static final String ERROR_CODE = "01";
@@ -43,5 +59,27 @@ public class AccountUtils {
         String randomNumber =  String.valueOf(randNumber);
         StringBuilder accountNumber = new StringBuilder();
         return accountNumber.append(year).append(randomNumber).toString() ;
+    }
+
+    public static void sendSms(String phoneNumber, String message) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        OkHttpClient client = new OkHttpClient();
+        SmsRequest smsRequest = new SmsRequest();
+        smsRequest.setMobileNumber(phoneNumber) ;
+        smsRequest.setMessageText(message);
+
+        MediaType mediaType = MediaType.parse("application/*+json");
+        RequestBody body = RequestBody.create(mediaType, objectMapper.writeValueAsString(smsRequest));
+        Request request = new Request.Builder()
+                .url("https://api.smslive247.com/api/v4/sms")
+                .post(body)
+                .addHeader("accept", "application/json")
+                .addHeader("content-type", "application/*+json")
+                .addHeader("Authorization", "MA-eb9cb816-50ac-4493-8674-cdbdbbb2255b")
+                .build();
+
+        Response response = client.newCall(request).execute();
     }
 }

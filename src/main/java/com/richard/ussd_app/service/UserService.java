@@ -5,10 +5,16 @@ import com.richard.ussd_app.dto.*;
 import com.richard.ussd_app.model.User;
 import com.richard.ussd_app.utils.AccountUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements IUser{
@@ -46,17 +52,22 @@ public class UserService implements IUser{
                 .build();
 
         User savedUser = userDAO.save(newUser);
-        
-//        Send email to created user
+        try {
+//            Send Sms to account holders phone Number
+            AccountUtils.sendSms(userRequest.getPhoneNumber(), "Your account has been created successfully");
 
-//        EmailDetails emailDetails = EmailDetails.builder()
-//                .recipient(savedUser.getEmail())
-//                .subject("Account Creation")
-//                .messageBody("Congratulation!  Your account has been created successully. \n Your account details:" +
-//                        " \n Account Name:  " + savedUser.getFirstName() + " " + savedUser.getLastName() + " " +
-//                        "\nAccount Number : " + savedUser.getAccountNumber() )
-//                .build();
-//        emailService.sendEmail(emailDetails);
+//            send email to account owner
+            EmailDetails emailDetails = EmailDetails.builder()
+                .recipient(savedUser.getEmail())
+                .subject("Account Creation")
+                .messageBody("Congratulation!  Your account has been created successully. \n Your account details:" +
+                        " \n Account Name:  " + savedUser.getFirstName() + " " + savedUser.getLastName() + " " +
+                        "\nAccount Number : " + savedUser.getAccountNumber() )
+                .build();
+        emailService.sendEmail(emailDetails);
+        } catch (IOException e) {
+            //
+        }
         return Response.builder()
                 .responseCode(AccountUtils.REQUEST_SUCCESSFUL)
                 .responseMessage(AccountUtils.REQUEST_SUCCESSFUL_MESSAGE)
@@ -67,6 +78,12 @@ public class UserService implements IUser{
                          .build())
                 .build();
 
+    }
+
+    @Override
+    @Cacheable(value = "accounts")
+    public List<User> getAllAccount() {
+        return userDAO.findAll();
     }
 
     @Override
