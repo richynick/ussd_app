@@ -1,6 +1,7 @@
-package com.richard.ussd_app.service;
+package com.richard.ussd_app.providers;
 
 import com.richard.ussd_app.dto.EmailDetails;
+import com.richard.ussd_app.interfaces.IEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
@@ -9,7 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailService implements IEmail{
+public class SmtpEmailing implements IEmail {
 
     @Autowired
     private JavaMailSender javaMailSender;

@@ -3,24 +3,30 @@ package com.richard.ussd_app.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.richard.ussd_app.dto.SmsRequest;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Year;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hibernate.dialect.OracleTypes.JSON;
 
+@Service
 public class AccountUtils {
-
-    @Value("${smslive.apiKey}")
-    private static String smsLiveApiKey;
-
-    @Value("${smslive.url}")
-    private static String smsLiveUrl;
-
-    @Value("${smslive.sendId}")
-    private static String sendId;
-
+//
+//    @Value("${smslive.url}")
+//    private String smsUrl;
+//
+//    @Value("${live.apiKey}")
+//    private String apiKey;
+//
+//    @Value("${smslive.sendId}")
+//    private String senderId;
     public static final String REQUEST_SUCCESSFUL = "00";
     public static final String ERROR_CODE = "01";
 
@@ -46,6 +52,12 @@ public class AccountUtils {
     public static final String INSUFFICIENT_BALANCE_CODE ="007";
     public static final String INSUFFICIENT_BALANCE_MESSAGE ="Insufficient balance";
 
+    public static final String APPLICATION_JSON = "application/json";
+    public static final String ACCEPT_HEADER = "accept";
+    public static final  String CONTENT_TYPE_HEADER = "Content-Type";
+    public static final  String APPLICATION_ALL_JSON = "application/*+json";
+
+
     public static String generateAccountNumber(){
         Year currentYear = Year.now();
         int min = 100000;
@@ -59,27 +71,30 @@ public class AccountUtils {
         String randomNumber =  String.valueOf(randNumber);
         StringBuilder accountNumber = new StringBuilder();
         return accountNumber.append(year).append(randomNumber).toString() ;
+
     }
 
-    public static void sendSms(String phoneNumber, String message) throws IOException {
+//    public void sendSms(String phoneNumber, String message) throws IOException {
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//
+//        OkHttpClient client = new OkHttpClient();
+//        SmsRequest smsRequest = new SmsRequest();
+//        smsRequest.setMobileNumber(phoneNumber);
+//        smsRequest.setSenderId(senderId);
+//        smsRequest.setMessageText(message);
+//
+//        MediaType mediaType = MediaType.parse("application/*+json");
+//        RequestBody body = RequestBody.create(mediaType, objectMapper.writeValueAsString(smsRequest));
+//        Request request = new Request.Builder()
+//                .url(smsUrl)
+//                .post(body)
+//                .addHeader(ACCEPT_HEADER, APPLICATION_JSON)
+//                .addHeader(CONTENT_TYPE_HEADER, APPLICATION_ALL_JSON)
+//                .addHeader("Authorization", apiKey)
+//                .build();
+//
+//        Response response = client.newCall(request).execute();
+//    }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        OkHttpClient client = new OkHttpClient();
-        SmsRequest smsRequest = new SmsRequest();
-        smsRequest.setMobileNumber(phoneNumber) ;
-        smsRequest.setMessageText(message);
-
-        MediaType mediaType = MediaType.parse("application/*+json");
-        RequestBody body = RequestBody.create(mediaType, objectMapper.writeValueAsString(smsRequest));
-        Request request = new Request.Builder()
-                .url("https://api.smslive247.com/api/v4/sms")
-                .post(body)
-                .addHeader("accept", "application/json")
-                .addHeader("content-type", "application/*+json")
-                .addHeader("Authorization", "MA-eb9cb816-50ac-4493-8674-cdbdbbb2255b")
-                .build();
-
-        Response response = client.newCall(request).execute();
-    }
 }
